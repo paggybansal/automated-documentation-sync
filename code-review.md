@@ -137,3 +137,58 @@ Batch 2 review identified one blocking finding and additional non-blocking impro
 - Status: Request Changes
 - Notes: Batch 2 review completed for markdown rendering and marker-safe synchronization scope.
 
+# Batch 3 Code Review — CLI and Integration Tests
+
+## 1. Review Scope
+This review covers only Batch 3 implementation work:
+- IMP-008: CLI argument parsing, user messages, and exit-code handling
+- IMP-010: CLI integration tests using pytest `tmp_path`
+- Batch 3 test-only fixtures, if applicable
+
+## 2. Files Reviewed
+### Production Files Reviewed
+- `src/doc_sync/cli.py`
+- `src/doc_sync/__init__.py` (Batch 3 relevance check)
+
+### Test and Fixture Files Reviewed
+- `tests/integration/test_cli_integration.py`
+- Batch 3-related files under `tests/fixtures/`
+
+## 3. Review Checklist
+- Correctness of CLI orchestration across read, validate, render, and sync layers
+- CLI argument behavior (`--write`, `--check`, `--manifest`, `--output`) and mode exclusivity
+- Exit-code mapping (`0`, `1`, `2`) and `main(argv) -> int` behavior
+- Error handling clarity and stderr usage for argument/domain/input failures
+- File safety for check-only behavior and no-write-current behavior
+- Integration test completeness and `tmp_path` isolation
+- Code clarity, typing, and DRY considerations
+- Security/dependency safety and design-review compliance (DR-001 through DR-006)
+
+## 4. Review Findings
+| Finding ID | Severity | File and line reference | Description | Recommendation | Blocking status | Human decision |
+|---|---|---|---|---|---|---|
+| B3-001 | Medium | `tests/integration/test_cli_integration.py:1-224` | Batch 3 integration tests did not explicitly verify default path behavior when `--manifest` and `--output` are omitted, leaving FR default-path behavior under-tested at CLI integration level. | Add an integration test that runs `main(["--check"])` or `main(["--write"])` from an isolated working directory containing `api/endpoints.json` and `docs/API_REFERENCE.md`, then assert expected exit code and message. | Non-Blocking | Accepted |
+| B3-002 | Low | `tests/integration/test_cli_integration.py:163-175` | CLI integration tests did not explicitly cover unsupported HTTP method behavior through the CLI path (`UnsupportedHttpMethodError` to exit code `2` with stderr output). | Add one integration test with an unsupported method value (for example `get`) and assert `code == 2` and a clear method-validation error in stderr. | Non-Blocking | Accepted |
+
+## 5. Positive Observations
+- `src/doc_sync/cli.py` correctly orchestrates manifest reading, validation, markdown rendering, and documentation synchronization.
+- `main(argv: Sequence[str] | None = None) -> int` is testable and returns integer exit codes; `SystemExit` is used only at module entrypoint.
+- `--write` and `--check` are enforced as mutually exclusive and required via `argparse`.
+- Exit-code mapping is aligned with requirements (`0` success/current/no-update, `1` stale in check mode, `2` invalid arguments and domain/input errors).
+- Integration tests use `tmp_path` and include non-mutation assertions for stale-check and invalid-marker scenarios.
+
+## 6. Human Review Decisions
+- Batch-level decision: **Approve with Changes**.
+- Finding decisions:
+  - B3-001: Accepted
+  - B3-002: Accepted
+
+## 7. Review Conclusion
+Batch 3 review approved the CLI and integration test implementation with non-blocking follow-up improvements. Accepted findings were focused on closing integration-test traceability gaps for default-path behavior and unsupported-method CLI error mapping.
+
+## 8. Human Approval
+- Reviewer: Parag Bansal
+- Review Date: 2026-08-25
+- Status: Approve with Changes
+- Notes: Batch 3 findings were accepted for targeted follow-up updates in integration tests.
+
