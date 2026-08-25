@@ -72,3 +72,68 @@ Batch 1 was reviewed and approved with non-blocking changes. The identified find
 - Status: Approved / Approved with Changes
 - Notes: Batch 1 code review completed using GitHub Copilot. Accepted findings
   will be addressed before the Batch 1 commit.
+
+# Batch 2 Code Review — Markdown Rendering and Documentation Synchronization
+
+## 1. Review Scope
+This review covers only Batch 2 implementation work:
+- IMP-006: Markdown rendering and safe table-value normalization
+- IMP-007: Marker-safe documentation synchronization
+- Related unit tests and fixtures for Batch 2
+
+## 2. Files Reviewed
+### Production Files Reviewed
+- `src/doc_sync/markdown_renderer.py`
+- `src/doc_sync/documentation_sync.py`
+- `src/doc_sync/errors.py` (Batch 2 relevance check)
+- `src/doc_sync/models.py` (Batch 2 relevance check)
+
+### Test and Fixture Files Reviewed
+- `tests/unit/test_markdown_renderer.py`
+- `tests/unit/test_documentation_sync.py`
+- Batch 2-related files under `tests/fixtures/`
+
+## 3. Review Checklist
+- Correctness of markdown output format and synchronization behavior
+- Markdown safety for pipes and line breaks
+- Marker safety (single pair, correct order, validation-before-write)
+- Write/check behavior for stale/current documentation states
+- File safety and error-handling clarity
+- Unit test coverage for happy and failure paths
+- Code quality and dependency safety
+- Requirement and design-decision traceability
+
+## 4. Review Findings
+| Finding ID | Severity | File and line reference | Description | Recommendation | Blocking status | Human decision |
+|---|---|---|---|---|---|---|
+| B2-001 | High | `src/doc_sync/documentation_sync.py:69-79` | Synchronization mode branching allows non-`SyncMode` inputs to risk incorrect behavior if mode typing is not strictly enforced at call boundaries. | Validate mode input explicitly and ensure branch logic cannot fall through into write behavior for invalid mode values. | Blocking | Accepted |
+| B2-002 | Medium | `src/doc_sync/documentation_sync.py:62, 78` | Read/write operations are not uniformly wrapped with path-specific diagnostic context for all filesystem errors. | Wrap file I/O failures with clear path-aware domain errors for consistent diagnostics. | Non-Blocking | Accepted |
+| B2-003 | Medium | `tests/unit/test_documentation_sync.py:73-89` | Invalid-marker scenarios were not explicitly validated across both sync modes in the initial review pass. | Add explicit invalid-marker coverage for check-mode behavior in addition to write-mode behavior. | Non-Blocking | Accepted |
+| B2-004 | Low | `tests/unit/test_markdown_renderer.py:13-53` | Deterministic rendering for identical input was not explicitly asserted in the initial test set. | Add a deterministic-output test rendering the same manifest multiple times and asserting exact equality. | Non-Blocking | Accepted |
+| B2-005 | Low | `src/doc_sync/documentation_sync.py:66` | Block comparison sensitivity to line-ending differences can cause unnecessary stale detection or rewrites. | Normalize line endings when comparing generated and existing marker-block content and add a regression test. | Non-Blocking | Accepted |
+
+## 5. Positive Observations
+- `src/doc_sync/markdown_renderer.py` includes required service/version lines and required table headers (`Method`, `Path`, `Description`, `Authentication`).
+- Markdown cell normalization addresses pipe and newline safety concerns for table output.
+- `src/doc_sync/documentation_sync.py` enforces marker presence/count/order and validates markers before write attempts.
+- Synchronization logic is structured to preserve content outside marker boundaries.
+- Batch 2 fixtures are scenario-focused and support stale/current and marker-failure testing.
+
+## 6. Human Review Decisions
+- Batch-level decision: **Request Changes**.
+- Finding decisions:
+  - B2-001: Accepted
+  - B2-002: Accepted
+  - B2-003: Accepted
+  - B2-004: Accepted
+  - B2-005: Accepted
+
+## 7. Review Conclusion
+Batch 2 review identified one blocking finding and additional non-blocking improvements. Changes were requested before approval.
+
+## 8. Human Approval
+- Reviewer: Parag Bansal
+- Review Date: 2026-08-25
+- Status: Request Changes
+- Notes: Batch 2 review completed for markdown rendering and marker-safe synchronization scope.
+
