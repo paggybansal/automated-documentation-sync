@@ -12,4 +12,3 @@ SECOND BLOCK
 <!-- DOCS_SYNC:END -->
 
 Footer text.
-

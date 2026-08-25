@@ -63,4 +63,3 @@ The architecture is approved for implementation planning, subject to the six acc
 - Review Date: 2026-08-25
 - Status: Approved
 - Notes: DR-001 through DR-006 accepted; all other findings deferred/out of scope unless otherwise stated.
-

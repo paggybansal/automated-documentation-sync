@@ -5,4 +5,3 @@ ONLY BLOCK CONTENT
 <!-- DOCS_SYNC:END -->
 
 Footer text.
-

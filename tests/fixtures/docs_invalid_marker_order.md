@@ -6,4 +6,3 @@ OUT OF ORDER BLOCK
 <!-- DOCS_SYNC:START -->
 
 Footer text.
-

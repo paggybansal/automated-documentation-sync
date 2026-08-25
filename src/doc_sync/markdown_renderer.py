@@ -30,4 +30,3 @@ def render_api_reference_section(manifest: Manifest) -> str:
         lines.append(f"| {method} | {path} | {description} | {authentication} |")
 
     return "\n".join(lines)
-

@@ -140,5 +140,3 @@ def test_sync_wraps_output_read_os_error(tmp_path: Path, monkeypatch: pytest.Mon
 
     with pytest.raises(PathValidationError):
         sync_documentation_block(output_path, "NEW BLOCK", SyncMode.CHECK)
-
-

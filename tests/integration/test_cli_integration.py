@@ -267,4 +267,3 @@ def test_cli_rejects_missing_mode_argument(tmp_path: Path, capsys: pytest.Captur
 
     assert code == 2
     assert "Error: Invalid command arguments:" in out.err
-

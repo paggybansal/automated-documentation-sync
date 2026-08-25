@@ -94,4 +94,3 @@ def sync_documentation_block(output_path: Path, generated_block: str, mode: Sync
         ) from exc
 
     return SyncResult(status=SyncStatus.UPDATED, changed=True)
-

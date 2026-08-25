@@ -71,5 +71,3 @@ def test_render_api_reference_section_is_deterministic() -> None:
     second = render_api_reference_section(manifest)
 
     assert first == second
-
-

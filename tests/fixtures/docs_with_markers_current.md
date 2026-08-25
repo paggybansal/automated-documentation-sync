@@ -6,4 +6,3 @@ CURRENT GENERATED CONTENT
 <!-- DOCS_SYNC:END -->
 
 Footer text.
-

@@ -85,4 +85,3 @@ At task completion, summarize:
 - Changed files.
 - Decisions made.
 - Commands run and their actual results.
-

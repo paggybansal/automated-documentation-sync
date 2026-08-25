@@ -18,4 +18,3 @@ Version: v1
 
 ## Change Policy
 Only content between DOCS_SYNC markers is generated.
-
