@@ -30,6 +30,13 @@ dev = [
   "pre-commit>=3.7.0",
 ]
 
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["doc_sync*"]
+
 [tool.pytest.ini_options]
 minversion = "8.0"
 testpaths = ["tests"]
@@ -44,7 +51,7 @@ addopts = [
 [tool.ruff]
 target-version = "py311"
 line-length = 100
-src = ["doc_sync", "tests"]
+src = ["src", "tests"]
 
 [tool.ruff.lint]
 select = [
