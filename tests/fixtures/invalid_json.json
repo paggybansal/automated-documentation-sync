@@ -1,0 +1,12 @@
+{
+  "serviceName": "Billing API",
+  "version": "v1",
+  "endpoints": [
+    {
+      "method": "GET",
+      "path": "/invoices",
+      "summary": "List invoices",
+      "authentication": "OAuth2"
+    }
+  ]
+
