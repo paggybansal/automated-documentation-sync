@@ -49,7 +49,9 @@ flowchart TD
   - Orchestrate end-to-end flow and map failures to exit codes (`0`, `1`, `2`).
 - `src/doc_sync/manifest_reader.py`
   - Resolve manifest path (default `api/endpoints.json` or `--manifest`).
-  - Verify file existence/readability and parse JSON.
+  - Use `pathlib.Path` for path resolution and file access.
+  - Validate that the manifest file exists before reading.
+  - Verify readability and parse JSON.
   - Raise typed parse/file errors for CLI mapping.
 - `src/doc_sync/validator.py`
   - Validate root fields: `serviceName`, `version`, `endpoints`.
@@ -64,12 +66,18 @@ flowchart TD
     - Service name
     - Version
     - Endpoint table (`Method`, `Path`, `Description`, `Authentication`)
+  - Normalize endpoint values before table rendering so Markdown remains valid.
+  - Replace or escape pipe characters (`|`) and line breaks in cell values.
 - `src/doc_sync/documentation_sync.py`
   - Resolve output path (default `docs/API_REFERENCE.md` or `--output`).
-  - Validate output file exists.
-  - Enforce exactly one marker pair with correct order.
+  - Use `pathlib.Path` for path resolution and file access.
+  - Validate that the output file exists before reading.
+  - Enforce exactly one `<!-- DOCS_SYNC:START -->` marker and exactly one `<!-- DOCS_SYNC:END -->` marker.
+  - Require the start marker to appear before the end marker.
+  - Complete marker validation before any output file change is attempted.
   - In `--check`, compare generated block with current block and report stale/current.
   - In `--write`, replace only marker-bounded block when stale.
+  - In `--write`, if content is already current, return exit code `0`, display "No update required", and perform no file write.
   - Preserve all content outside marker boundaries exactly.
 - `src/doc_sync/errors.py`
   - Define explicit exception classes/categories for:
@@ -87,14 +95,16 @@ flowchart TD
    - Output default: `docs/API_REFERENCE.md`
 3. Manifest reader loads and parses JSON input.
 4. Validator validates root fields, endpoint list, endpoint fields, and method constraints.
-5. Markdown renderer builds the generated API reference fragment.
+5. Markdown renderer normalizes endpoint values (including pipe and line-break handling) and builds the generated API reference fragment.
 6. Documentation sync loads output Markdown and validates marker constraints:
-   - marker presence
+   - exactly one `<!-- DOCS_SYNC:START -->` marker
+   - exactly one `<!-- DOCS_SYNC:END -->` marker
    - marker order (`START` before `END`)
-   - exactly one marker pair
+   - validation completes before any write operation
+   - invalid marker conditions stop processing with no file modification
 7. Mode execution:
    - `--check`: compare existing marker-bounded content with generated fragment; return stale/current status only.
-   - `--write`: if stale, replace only marker-bounded content; if current, no write.
+   - `--write`: if stale, replace only marker-bounded content; if current, return exit code `0`, show "No update required", and perform no write.
 8. CLI returns mapped exit code.
 
 ## 6. CLI Design
@@ -108,7 +118,7 @@ flowchart TD
   - Exactly one of `--write` or `--check` is required.
   - Both modes or neither mode => invalid arguments.
 - Exit code contract:
-  - `0`: successful write, no changes needed, or docs current.
+  - `0`: successful write, no changes needed, or docs current; in `--write` mode when current, output a clear "No update required" message and do not write files.
   - `1`: docs stale in `--check` mode.
   - `2`: invalid args, missing files, invalid JSON, invalid manifest, missing/invalid markers.
 
@@ -126,6 +136,8 @@ Design rules:
 - Keep business logic out of CLI parsing layer.
 - Keep validation centralized in `validator.py`.
 - Keep synchronization/marker logic centralized in `documentation_sync.py`.
+- Use `pathlib.Path` for all file operations across modules.
+- Validate file existence before read operations for manifest and output documentation files.
 - Use typed dataclasses to reduce shape ambiguity across components.
 - Prefer pure functions where possible to simplify unit testing.
 
@@ -133,6 +145,7 @@ Design rules:
 - Use structured, typed errors from each layer and map in CLI to exit code `2`, except stale check result mapped to `1`.
 - Fail fast on invalid arguments and validation failures.
 - Error cases covered:
+  - Missing or invalid file paths
   - Missing manifest file
   - Missing output documentation file
   - Invalid JSON
@@ -145,10 +158,12 @@ Design rules:
   - Multiple marker pairs
 - Error messages include failing file path and relevant field/condition when possible.
 - Any failure in validation/sync MUST NOT modify output file.
+- Marker validation failures (missing, duplicate, or wrong order) always result in zero output-file modification.
 
 ## 9. Security and File-Safety Controls
 - No secrets, tokens, credentials, private URLs, environment files, external API calls, or database integration.
 - Local-only file processing; no network dependency.
+- No network paths or external file services are used.
 - Explicit marker-bounded replacement prevents accidental overwrite of manual documentation sections.
 - Preserve non-generated content exactly outside marker boundaries.
 - In `--check` mode, enforce read-only behavior (no file writes).
@@ -164,11 +179,14 @@ Design rules:
   - marker detection and replacement logic
   - exit code mapping
 - **CLI integration tests (pytest):**
+  - use `tmp_path` temporary directories and fixture files
+  - must not modify repository source files, manifest files, or documentation files
   - `--check` stale -> exit `1`
   - `--check` current -> exit `0`
   - `--write` stale update -> exit `0`
+  - `--write` current -> exit `0` with "No update required" and no file write
   - invalid args (both modes / no mode) -> exit `2`
-  - missing files, invalid JSON, invalid marker order -> exit `2`
+  - missing files, invalid JSON, invalid marker order, duplicate markers -> exit `2`
 - **Regression focus:** preservation of all content outside marker block.
 
 ## 11. GitHub Actions Pull Request Validation Design
@@ -178,10 +196,11 @@ Design rules:
   2. Ruff format verification.
   3. pytest unit tests.
   4. pytest integration tests.
-  5. Documentation freshness validation via `docs-sync --check` using default paths (`api/endpoints.json` and `docs/API_REFERENCE.md`).
+  5. Documentation freshness validation via `docs-sync --check` using default paths (`api/endpoints.json` and `docs/API_REFERENCE.md`) only.
 - Merge gate behavior:
   - Any non-zero status fails the PR check.
   - `docs-sync --check` stale condition (exit `1`) fails validation until docs are updated.
+  - CI must never run write mode, modify documentation, commit generated files, or push changes.
 
 ## 12. Requirement Traceability
 | Architecture Component | Responsibility Summary | FR Coverage | NFR Coverage |
@@ -205,4 +224,15 @@ Design rules:
 - Notes: High-level architecture reviewed. The proposed modular Python design,
   safe marker replacement strategy, CLI behavior, and verification approach are
   approved for design review.
+
+## Design Review Updates
+
+| Review ID | Architecture Update |
+|---|---|
+| DR-001 | Added strict single-marker validation and no-write-on-validation-failure behavior. |
+| DR-002 | Added pathlib-based file validation and local-only file-operation constraints. |
+| DR-003 | Added Markdown table value normalization requirements. |
+| DR-004 | Defined no-change behavior for --write mode. |
+| DR-005 | Defined temporary-directory isolation for CLI integration tests. |
+| DR-006 | Defined check-only, non-mutating GitHub Actions behavior. |
 
