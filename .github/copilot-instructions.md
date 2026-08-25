@@ -2,59 +2,87 @@
 
 These instructions apply to all Copilot-assisted work on this repository.
 
+## Project Context
+
+This repository is a Python 3.11+ CLI project named **Automated Documentation Sync**.
+The application reads API endpoint metadata from a JSON manifest, generates Markdown API documentation, and safely synchronizes only content between DOCS_SYNC markers in a Markdown file.
+
 ## Required Context Review
 
-Before making any **production code** changes, read and align with:
+Before changing any **production code**, read and align with:
 - `requirements.md`
 - `architecture.md`
 - `design-review.md`
 - `impl-plan.md`
 
-If any required document is missing, outdated, or ambiguous, pause and ask for human clarification before proceeding.
+If requirements or behavior are ambiguous, ask clarification questions before implementation.
 
 ## Language and Implementation Standards
 
 - Use **Python 3.11+**.
 - Add and maintain **type hints** for all new or changed production code.
-- Prefer **Python standard-library modules** whenever feasible.
-- Use `pathlib.Path` for filesystem paths instead of raw string paths where possible.
+- Prefer Python standard-library modules unless a dependency is clearly justified.
+- Prefer and use standard modules such as `pathlib`, `argparse`, `json`, `dataclasses`, and `typing` where appropriate.
+- Use `pathlib.Path` for filesystem operations instead of raw string paths where possible.
 
 ## Validation and Safety Requirements
 
-Always validate before processing or writing:
-- Input JSON format and schema/expected structure.
+Validate all inputs before processing or writing:
+- Input JSON format and parse validity.
+- Required manifest fields.
+- Endpoint fields.
 - File paths (existence, type, and allowed scope).
-- Documentation markers (`DOCS_SYNC` start/end markers) and marker pairing.
-- Presence and validity of all required fields.
+- Command-line arguments.
+- Documentation markers and pairing using these exact lines:
+  - `<!-- DOCS_SYNC:START -->`
+  - `<!-- DOCS_SYNC:END -->`
 
-Never overwrite or modify content outside `DOCS_SYNC` markers.
+Never overwrite or modify content outside these marker boundaries.
+
+## Failure Handling Requirements
+
+Fail safely and return clear errors for:
+- Missing files.
+- Invalid JSON.
+- Empty endpoints.
+- Missing required fields.
+- Missing markers.
+- Invalid marker order.
 
 ## Testing and Quality Gates
 
 For every behavior change:
-- Add or update **pytest** tests that cover the change.
-- Include unit tests and integration tests as applicable.
+- Add or update **pytest** tests.
 
-Before considering work complete, run:
-- Ruff lint checks
-- Ruff formatting check (or apply formatting as required)
-- Unit tests
-- Integration tests
-- Documentation checks
+Before claiming work is done, run and verify:
+- Ruff linting.
+- Ruff formatting verification.
+- Unit tests.
+- Integration tests.
+- Documentation freshness validation.
 
 ## Security and Scope Controls
 
-- Do not introduce or expose secrets, credentials, tokens, or private keys.
-- Do not perform unrelated refactoring or scope creep in the same change.
-- Keep changes focused, minimal, and traceable to requirements.
+- Never add or expose secrets, tokens, credentials, private URLs, or environment files.
+- Avoid unrelated refactoring.
 
 ## Human Approval Gates
 
-Ask for explicit human approval **before**:
-- Performing file edits
-- Creating commits
-- Pushing to remotes
-- Creating pull requests
+Before editing production code:
+- Present a file-level plan.
+- Wait for explicit human approval.
 
-If approval is not explicit, stop and ask first.
+Never perform the following without explicit human approval:
+- Commit.
+- Push.
+- Create a pull request.
+- Delete files.
+- Perform destructive Git operations.
+
+## Task Completion Reporting
+
+At task completion, summarize:
+- Changed files.
+- Decisions made.
+- Commands run and their actual results.
 
