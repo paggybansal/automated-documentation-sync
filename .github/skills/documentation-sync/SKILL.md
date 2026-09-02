@@ -125,3 +125,4 @@ Use this skill when working on:
 - [ ] Verified CI uses `docs-sync --check` only and is non-mutating.
 - [ ] Summarized changed files and actual commands run/results.
 - [ ] Obtained explicit human approval for any commit/push/PR actions.
+

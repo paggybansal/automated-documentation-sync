@@ -235,3 +235,4 @@ Design rules:
 | DR-004 | Defined no-change behavior for --write mode. |
 | DR-005 | Defined temporary-directory isolation for CLI integration tests. |
 | DR-006 | Defined check-only, non-mutating GitHub Actions behavior. |
+

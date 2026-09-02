@@ -35,3 +35,4 @@ def test_missing_field_errors_include_context() -> None:
     assert "index 0" in str(endpoint_err)
     assert "method" in str(endpoint_err)
     assert "fetch" in str(method_err)
+
