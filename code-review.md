@@ -314,3 +314,70 @@ No blocking findings were identified for Batch 5.
 
   ```text
   python -m pip install -e ".[dev]"
+
+
+# Batch 6 Code Review — README and CHANGELOG
+
+## 1. Review Scope
+
+This review covers the final user-facing project documentation created for
+IMP-014.
+
+## 2. Files Reviewed
+
+- `README.md`
+- `CHANGELOG.md`
+
+## 3. Review Checklist
+
+The review checked:
+
+- CLI command accuracy.
+- Default manifest and output paths.
+- `--write` and `--check` behavior.
+- Exit code documentation.
+- DOCS_SYNC marker safety documentation.
+- Installation and development instructions.
+- Ruff, pytest, pre-commit, and documentation check commands.
+- GitHub Actions behavior.
+- Project scope limitations.
+- Keep a Changelog structure and accuracy.
+- Security, clarity, and Markdown quality.
+
+## 4. Review Findings
+
+No blocking findings were identified for Batch 6.
+
+| Finding ID | Severity | File and Line | Review Area | Description | Recommendation | Blocking? | Human Decision |
+|---|---|---|---|---|---|---|---|
+| None | N/A | N/A | Documentation Quality | No blocking issues were identified during the README and CHANGELOG review. | Approve the documentation for commit. | No | Accepted |
+
+## 5. Positive Observations
+
+- README documents installation, CLI usage, default paths, marker safety, exit
+  codes, testing, pre-commit, and GitHub Actions validation.
+- README accurately describes check-only CI behavior.
+- README documents project scope limitations and avoids unsupported claims.
+- CHANGELOG uses an Unreleased section and records the implemented features.
+- No secrets, credentials, private URLs, or deployment claims were identified.
+
+## 6. Human Review Decisions
+
+No documentation findings required correction.
+
+| Finding ID | Human Decision | Rationale |
+|---|---|---|
+| None | Approved | README and CHANGELOG accurately document the implemented project behavior. |
+
+## 7. Review Conclusion
+
+No blocking findings were identified for Batch 6. The README and CHANGELOG are
+approved for commit after final verification.
+
+## 8. Human Approval
+
+- Reviewer: Parag Bansal
+- Review Date: `<enter actual date>`
+- Status: Approved
+- Notes: Final project documentation was reviewed for accuracy, safety,
+  completeness, and consistency with the implemented CLI behavior.
