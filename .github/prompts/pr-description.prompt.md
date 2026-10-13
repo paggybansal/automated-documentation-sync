@@ -37,4 +37,3 @@ Use exactly these section headings and only these headings:
 - Do not invent test results, command outputs, coverage, or files changed.
 - Include only factual command results and actual changed-file summaries.
 - If a check was not run, state "Not run" explicitly.
-

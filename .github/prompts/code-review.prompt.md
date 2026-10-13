@@ -51,4 +51,3 @@ For each finding, include:
 - Do not invent test outcomes, coverage, or command outputs.
 - If verification was not run, state this clearly.
 - End with changed files summary (if approved edits happened) and actual commands run/results.
-

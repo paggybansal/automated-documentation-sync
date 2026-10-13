@@ -47,4 +47,3 @@ You are a senior Python Technical Lead reviewing implementation planning quality
   - Recommended plan changes
   - Final recommendation: `Approved` or `Needs Revision`
 - Include changed files summary (if any approved edits were made) and actual commands run/results.
-

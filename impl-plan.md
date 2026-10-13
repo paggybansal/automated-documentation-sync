@@ -125,4 +125,4 @@ Deliver a Python 3.11+ CLI implementation of Automated Documentation Sync that r
 - Notes: The dependency-ordered implementation plan was reviewed. The scope,
   task ordering, safety controls, test strategy, and CI validation approach
   are approved for implementation.
-- 
+-
