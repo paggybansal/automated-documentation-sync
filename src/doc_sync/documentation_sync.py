@@ -44,7 +44,9 @@ def validate_marker_block(content: str) -> tuple[int, int, int, int]:
             f"Expected exactly one start marker '{START_MARKER}', found {start_count}"
         )
     if end_count != 1:
-        raise MarkerValidationError(f"Expected exactly one end marker '{END_MARKER}', found {end_count}")
+        raise MarkerValidationError(
+            f"Expected exactly one end marker '{END_MARKER}', found {end_count}"
+        )
 
     start_marker_index = content.find(START_MARKER)
     end_marker_index = content.find(END_MARKER)
@@ -69,7 +71,9 @@ def sync_documentation_block(output_path: Path, generated_block: str, mode: Sync
     try:
         original_content = output_path.read_text(encoding="utf-8")
     except OSError as exc:
-        raise PathValidationError(f"Unable to read output documentation file '{output_path}': {exc}") from exc
+        raise PathValidationError(
+            f"Unable to read output documentation file '{output_path}': {exc}"
+        ) from exc
 
     _, block_start, block_end, _ = validate_marker_block(original_content)
 
@@ -85,7 +89,9 @@ def sync_documentation_block(output_path: Path, generated_block: str, mode: Sync
     if is_current:
         return SyncResult(status=SyncStatus.CURRENT, changed=False)
 
-    updated_content = f"{original_content[:block_start]}{target_block}{original_content[block_end:]}"
+    updated_content = (
+        f"{original_content[:block_start]}{target_block}{original_content[block_end:]}"
+    )
     try:
         output_path.write_text(updated_content, encoding="utf-8")
     except OSError as exc:

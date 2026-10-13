@@ -120,6 +120,7 @@ def test_sync_treats_line_ending_only_block_difference_as_current(tmp_path: Path
         "\r\n"
         "Footer text.\r\n",
         encoding="utf-8",
+        newline="",
     )
     original = output_path.read_text(encoding="utf-8")
 

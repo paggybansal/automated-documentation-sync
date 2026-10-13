@@ -9,7 +9,7 @@ synchronizes only the content inside DOCS_SYNC markers.
 ## 2. Verification Date
 
 - Verified By: Parag Bansal
-- Verification Date: <actual date>
+- Verification Date: 2026-10-13
 - Branch: feature/documentation-sync-core
 
 ## 3. Requirements Verification Summary
@@ -26,17 +26,24 @@ synchronizes only the content inside DOCS_SYNC markers.
 | `--write` behavior | Passed | Integration tests and local CLI verification |
 | `--check` behavior | Passed | Integration tests and local CLI verification |
 | Exit codes 0, 1, and 2 | Passed | Integration tests |
-| Pre-commit quality automation | Passed | Local pre-commit execution |
+| Pre-commit quality automation | Not run (environment issue) | `git check-attr` subprocess error on this machine; underlying Ruff checks verified directly |
 | GitHub Actions check-only validation | Configured | `.github/workflows/documentation-sync.yml` |
 
-## 4. Commands Executed
+## 4. Commands Executed and Actual Results
+
+| Command | Result |
+|---|---|
+| `python -m ruff check .` | Passed — "All checks passed!" |
+| `python -m ruff format --check .` | Passed — "40 files already formatted" |
+| `python -m pytest tests/unit -v` | Passed — 38 passed |
+| `python -m pytest tests/integration -v` | Passed — 17 passed |
+| `docs-sync --write` | Exit 0 — "No update required." |
+| `docs-sync --check` | Exit 0 — "Documentation is current." |
 
 ```text
-pre-commit run --all-files
 python -m ruff check .
 python -m ruff format --check .
 python -m pytest tests/unit -v
 python -m pytest tests/integration -v
 docs-sync --write
 docs-sync --check
-git diff --check
